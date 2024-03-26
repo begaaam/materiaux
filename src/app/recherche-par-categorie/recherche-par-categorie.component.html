@@ -1,0 +1,41 @@
+<div class="container">
+    <div class="col-sm-4 col-md-4 col-lg-4 mb-4">
+      <label>Categories </label>
+      <select class="form-control form-control-lg" id="idCat" name="idCat"
+      [(ngModel)]="IdCategorie" (change)="onChange()">
+      <option *ngFor="let cat of categories" value="{{cat.idCat}}">
+      {{cat.nomCat}}
+       </option>
+      </select>
+      </div>
+
+    <div class="card shadow mb-4">
+      <div class="card-body">
+        <table class="table table-striped">
+            <tr>
+              <th>Id</th>
+              <th>Nom</th>
+              <th>DateDébut</th>
+              <th>DateFin</th>
+              <th>Categorie</th>
+              <th>Lieu</th>
+            </tr>
+          <tbody >
+            <tr *ngFor="let mat of materiaux">
+              <td>{{mat.idMateriel }}</td>
+              <td>{{mat.nomMateriel}}</td>
+              <td>{{mat.dateCreation | date:'dd/MM/yyyy'}}</td>
+              <td>{{mat.dateFin | date:'dd/MM/yyyy'}}</td>
+
+              <td>{{mat.categorie?.nomCat}}</td>
+              <td>{{mat.intervention?.lieuInt}}</td>
+               <!--
+              <td><a class="btn btn-danger" (click)="supprimerMateriel(mat)">Supprimer</a></td>
+              <td><a class="btn btn-success" [routerLink]="['/updatemateriel',mat.idMateriel]">Modifier</a></td>
+              -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>

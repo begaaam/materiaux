@@ -25,21 +25,37 @@ export class AddMaterielComponent implements OnInit {
   constructor(private materielService:MaterielService,
               private router:Router){}
   ngOnInit(): void {
-     // console.log(this.newMateriel);
-     this.categories = this.materielService.listeCategories();
-     this.interventions = this.materielService.listeInterventions();
+     this.materielService.listeCategories()
+     .subscribe(cats =>{
+      console.log(cats);
+      this.categories =cats._embedded.categories;
+      //this.categories =cats;
+       });
+       this.materielService.listeInterventions().
+       subscribe(ints =>{
+        console.log(ints);
+        this.interventions =ints._embedded.interventions;
+       //this.interventions =ints;
+      });
   }
+    /*
    ajouterMateriel(){
-    //console.log(this.newMateriel);
-    //this.materielService.addMateriel(this.newMateriel);
-    this.newCategorie = this.materielService.consulterCategorie(this.newIdCat);
-    this.newMateriel.categorie= this.newCategorie;
-    //this.materielService.addMateriel(this.newMateriel);
-    // intervention
-    this.newIntervention = this.materielService.consulterIntervention(this.newInt);
-    this.newMateriel.intervention = this.newIntervention;
-    this.materielService.addMateriel(this.newMateriel);
-    console.log(this.newMateriel);
-    this.router.navigate(['materiaux']);
+     this.materielService.addMateriel(this.newMateriel)
+     .subscribe(mat =>{
+      console.log(mat);
+      this.router.navigate(['materiaux']);
+     })
    }
+   */
+   ajouterMateriel(){
+    this.newMateriel.categorie =this.categories.find(cat =>cat.idCat == this.newIdCat)!;
+    this.newMateriel.intervention=this.interventions.find(int=> int.idInt == this.newInt)!;
+    this.materielService.addMateriel(this.newMateriel)
+    .subscribe(mat=>{
+      console.log(mat);
+      this.router.navigate(['materiaux']);
+    })
+
+
+  }
 }

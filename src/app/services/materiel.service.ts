@@ -4,6 +4,9 @@ import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http'
 import { Materiel } from '../models/materiel.model';
 import { Categorie } from '../models/categorie.model';
 import { Intervention } from '../models/intervention.model';
+import { apiURL, apiURLCat, apiURLInt } from '../config';
+import { CategorieWrapper } from '../models/categorieWrapped.model';
+import { InterventionWrapper } from '../models/interventionWrapped.model';
 const httpOptions={
   headers:new HttpHeaders({'Content-type':'application/json'})
 };
@@ -11,7 +14,10 @@ const httpOptions={
   providedIn: 'root'
 })
 export class MaterielService {
-  apiURL:string='http://localhost:8080/materiaux/api'
+ // apiURL:string='http://localhost:8080/materiaux/api';
+  //apiURLCat:string ='http://localhost:8080/materiaux/cat';
+  //apiURLInt:string ='http://localhost:8080/materiaux/int';
+
   materiaux!:Materiel[];
   categories!:Categorie[];
   interventions!:Intervention[];
@@ -24,7 +30,8 @@ export class MaterielService {
           /*
     this.interventions= [{idInt:1,lieuInt:"part dieu",dateInt: new Date("01/14/2011")},
                          {idInt:2,lieuInt:"Gerland",dateInt: new Date("01/14/2011")}];
-                         */
+                       */
+                      /*
     this.materiaux =[
       {idMateriel: 1, nomMateriel :"PC Asus",dateCreation : new Date("01/14/2011"), dateFin : new Date("01/14/2011"),
                         categorie:{idCat:1,nomCat:"PC",descriptionCat:"1ere génération"},
@@ -36,36 +43,27 @@ export class MaterielService {
                                 categorie:{idCat:2,nomCat:"PC",descriptionCat:"1ere génération"},
                                 intervention:{idInt:2,lieuInt:"Gerland",dateInt: new Date("01/14/2011")}}
        ];
+  */
    }
-/*
-   listeMateriaux():Materiel[]{
-     return this.materiaux;
-   }
-   */
+
    listeMateriaux(): Observable<Materiel[]>{
-    return this.http.get<Materiel[]>(this.apiURL);
+    return this.http.get<Materiel[]>(apiURL);
   }
-   addMateriel(mat:Materiel){
-    this.materiaux.push(mat);
+
+   addMateriel(mat:Materiel):Observable<Materiel>{
+    return this.http.post<Materiel>(apiURL,mat,httpOptions);
    }
-   supprimerMateriel(mat:Materiel){
-    // supprimer le materiel mat du tableau materiel
-    const index = this.materiaux.indexOf(mat,0);
-    if(index > -1){
-      this.materiaux.splice(index,1);
-    }
-    // ou Bien
-    /*
-     this.materiaux.forEach((cur, index)=>{
-      if(maat.idMateriel === cur.idMateriel){
-        this.materiaux.splice(index,1);
+
+
+   supprimerMateriel(id:number){
+        const url =`${apiURL}/${id}`;
+        return this.http.delete(url, httpOptions);
       }
-     });
-    */
-   }
-   consulterMateriel(id:number):Materiel{
-    this.materiel = this.materiaux.find(m => m.idMateriel == id)!;
-    return this.materiel;
+
+   consulterMateriel(id:number):Observable<Materiel>{
+    const url = `${apiURL}/${id}`;
+    return this.http.get<Materiel>(url);
+
    }
    trierMateriel(){
     this.materiaux = this.materiaux.sort((n1, n2) => {
@@ -89,25 +87,53 @@ export class MaterielService {
     });
   }
 
-  updateMateriel(mat:Materiel){
-    // console.log(p)
-    this.supprimerMateriel(mat);
-    this.addMateriel(mat);
-    this.trierMateriel();
+   updateMateriel(mat:Materiel):Observable<Materiel>{
+       return this.http.put<Materiel>(apiURL,mat,httpOptions);
    }
    // -- categories
-   listeCategories():Categorie[]
+/*
+   listeCategories():Observable<Categorie[]>
    {
-      return this.categories;
+      //return this.http.get<Categorie[]>(this.apiURL+"/cat");
+      return this.http.get<Categorie[]>(apiURLCat);
    }
+*/
+
+   listeCategories():Observable<CategorieWrapper>
+   {
+      return this.http.get<CategorieWrapper>(apiURLCat);
+   }
+
    consulterCategorie(id:number){
     return this.categories.find(cat => cat.idCat == id)!;
    }
+   ajouterCategorie(cat:Categorie):Observable<Categorie>{
+    return this.http.post<Categorie>(apiURLCat,cat,httpOptions);
+   }
   // -- interventions
-  listeInterventions():Intervention[]{
-    return this.interventions;
+  /*
+  listeInterventions(): Observable<Intervention[]>{
+   // return this.http.get<Intervention[]>(apiURL+"/int");
+   return this.http.get<Intervention[]>(apiURLInt);
   }
+*/
+
+  listeInterventions(): Observable<InterventionWrapper>{
+
+    return this.http.get<InterventionWrapper>(apiURLInt);
+   }
+
   consulterIntervention(id:number):Intervention{
     return this.interventions.find(int => int.idInt == id)!;
   }
+  //-- rechecrehr par catégorie
+   rechercherParCategorie(idCat: number):Observable<Materiel[]> {
+    const url = `${apiURL}/matscat/${idCat}`;
+    return this.http.get<Materiel[]>(url);
+   }
+
+   rechercherParNom(nom: string):Observable<Materiel[]> {
+    const url = `${apiURL}/matsByName/${nom}`;
+    return this.http.get<Materiel[]>(url);
+    }
 }

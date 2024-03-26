@@ -1,0 +1,54 @@
+<div class="container">
+  <form class="form-inline">
+    <!-- première version
+    <div class="form-group mx-sm-3 mb-2 mt-2 ">
+      <label>Nom Materiel</label>
+      <input type="text" class="form-control" [(ngModel)]="nomMateriel" name="nomMateriel" class="form-control">
+      <button type="submit" (click)="rechercherMats()" class="btn btn-primary mb-2 ml-2">Rechercher</button>
+    </div>
+       -->
+       <!-- 2eme version
+      <div class="form-group mx-sm-3 mb-2 mt-2 ">
+        <label>Nom Materiel en tapant</label>
+        <input class="form-control" #searchTerm (keyup)="onKeyUp(searchTerm.value)">
+      </div>
+      -->
+      <form class="form-inline">
+        <div class="form-group mx-sm-3 mb-2 mt-2 ">
+        <label>Nom Materiel en tapant</label>
+        <input #nom [(ngModel)]="searchTerm" name="searchTerm" class="form-control" >
+        </div>
+        </form>
+  </form>
+
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <table class="table table-striped">
+          <tr>
+            <th>Id</th>
+            <th>Nom</th>
+            <th>DateDébut</th>
+            <th>DateFin</th>
+            <th>Categorie</th>
+            <th>Lieu</th>
+          </tr>
+        <tbody >
+          <tr *ngFor="let mat of materiaux |searchFilter: searchTerm ">
+            <td>{{mat.idMateriel }}</td>
+            <td>{{mat.nomMateriel}}</td>
+            <td>{{mat.dateCreation | date:'dd/MM/yyyy'}}</td>
+            <td>{{mat.dateFin | date:'dd/MM/yyyy'}}</td>
+
+            <td>{{mat.categorie?.nomCat}}</td>
+            <td>{{mat.intervention?.lieuInt}}</td>
+             <!--
+            <td><a class="btn btn-danger" (click)="supprimerMateriel(mat)">Supprimer</a></td>
+            <td><a class="btn btn-success" [routerLink]="['/updatemateriel',mat.idMateriel]">Modifier</a></td>
+            -->
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+

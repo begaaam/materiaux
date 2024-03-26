@@ -20,21 +20,42 @@ export class UpdateMaterielComponent implements OnInit{
     constructor(private activatedRoute:ActivatedRoute,
                  private router:Router,
                 private materielService:MaterielService){}
-  ngOnInit(): void {
-    // console.log(this.route.snapshot.params.id);
-    this.categories = this.materielService.listeCategories();
-    this.interventions = this.materielService.listeInterventions();
-    this.currentMateriel = this.materielService.consulterMateriel(this.activatedRoute.snapshot.params['id']);
-    this.updatedCatId=this.currentMateriel.categorie.idCat;
-    this.updatedIntId=this.currentMateriel.intervention.idInt;
 
-     console.log(this.currentMateriel);
-  }
+ ngOnInit(): void {
+    this.materielService.consulterMateriel(this.activatedRoute.snapshot.params['id'])
+     .subscribe(mat =>{this.currentMateriel=mat;
+      console.log(mat);
+    });
+
+   this.materielService.listeCategories()
+    .subscribe(cats =>{this.categories=cats._embedded.categories;
+      console.log(cats);
+    });
+
+    this.materielService.listeInterventions()
+    .subscribe(ints =>{this.interventions = ints._embedded.interventions;
+     console.log(ints);
+    });
+    this.materielService.consulterMateriel(this.activatedRoute.snapshot.params['id'])
+    .subscribe(mat =>{this.currentMateriel=mat;
+
+    this.updatedCatId = this.currentMateriel.categorie.idCat;
+    this.updatedIntId =this.currentMateriel.intervention.idInt;
+  });
+ }
+
   updateMateriel(){
-       this.currentMateriel.categorie=this.materielService.consulterCategorie(this.updatedCatId);
-       this.currentMateriel.intervention = this.materielService.consulterIntervention(this.updatedIntId);
-       this.materielService.updateMateriel(this.currentMateriel);
-       this.router.navigate(['materiaux']);
+  /* this.materielService.updateMateriel(this.currentMateriel).subscribe(mat =>{
+      this.router.navigate(['materiaux']);
+    })*/
+    this.currentMateriel.categorie = this.categories
+    .find(cat =>cat.idCat == this.updatedCatId )!;
+    this.currentMateriel.intervention = this.interventions
+    .find(int =>int.idInt == this.updatedIntId )!;
+    this.materielService.updateMateriel(this.currentMateriel)
+    .subscribe(mat =>{
+      this.router.navigate(['materiaux'])
+    });
   }
 
 }
